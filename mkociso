@@ -57,6 +57,24 @@ def main():
         default=False,
         help="Create netinstaller with boot_menu.yml",
     )
+    arg_parser.add_argument(
+        "-e",
+	"--flatpak-repo-name",
+        required=True,
+        help="Name of repository for flatpak applications and runtimes",
+    )
+    arg_parser.add_argument(
+        "-g",
+	"--flatpak-repo",
+        required=True,
+        help="Repository for flatpak applications and runtimes",
+    )
+    arg_parser.add_argument(
+        "-f",
+	"--flatpaks",
+        required=True,
+        help="Flatpaks to install",
+    )
 
     cli_args = arg_parser.parse_args()
 
@@ -83,8 +101,12 @@ def main():
         "--force",
         "--add-template-var", f"ostree_oci_ref={cli_args.image}",
         "--add-template-var", "ostree_osname=universalblue",
+        "--add-template-var", f"flatpak_remote_name={cli_args.flatpak-repo-name}",
+        "--add-template-var", f"flatpak_remote_url={cli_args.flatpak-repo}",
+        "--add-template-var", f"flatpak_remote_refs={cli_args.flatpaks}",
         "--add-template", f"{PWD}/lorax-templates/ostree-based-installer/lorax-configure-repo.tmpl",
         "--add-template", f"{PWD}/lorax-templates/ostree-based-installer/lorax-embed-repo.tmpl",
+        "--add-template", f"{PWD}/lorax-templates/ostree-based-installer/lorax-embed-flatpaks.tmpl",
         "--installpkgs", "glibc-langpack-*",
         "--installpkgs", "langpacks-*",
         f"{GITHUB_WORKSPACE}/build/offline_{image_variant}"
